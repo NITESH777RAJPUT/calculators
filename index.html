@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s;
+      background: linear-gradient(45deg, #f0f0f0, #a3c2ff, #d1a3ff, #f0f0f0);
+      background-size: 400%;
+      animation: gradientAnimation 15s ease infinite;
+    }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .calculator-container {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      width: 100%;
+      max-width: 700px; /* Adjusted to accommodate history and calculator side by side */
+      margin-top: -20px; /* Move calculator upward */
+      align-items: flex-start;
+    }
+    .history-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 200px; /* Fixed width for history section */
+    }
+    .heading {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .calculator {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px; /* Keep calculator width consistent */
+    }
+    .display {
+      width: 100%;
+      height: 80px;
+      font-size: 24px;
+      text-align: right;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #e6f0fa;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .display .expression {
+      font-size: 16px;
+      color: #666;
+      word-wrap: break-word;
+    }
+    .display .result {
+      font-size: 24px;
+      color: #000;
+    }
+    .history {
+      height: 200px; /* Increased height for better visibility */
+      background: #f0f0f0;
+      border-radius: 5px;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 14px;
+      color: #333;
+    }
+    .buttons {
+      display: grid;
+      grid-template-areas:
+        "openparen closeparen ans del C"
+        "sin cos tan percent sqrt"
+        "log ln power mult div"
+        "seven eight nine plus minus"
+        "four five six pi e"
+        "one two three ms mr"
+        "zero zero dot mc mplus"
+        "enter enter enter enter enter";
+      gap: 5px;
+    }
+    button {
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, opacity 0.3s;
+      background: #d3d3d3;
+      color: #333;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .openparen { grid-area: openparen; }
+    .closeparen { grid-area: closeparen; }
+    .ans { grid-area: ans; }
+    .del { grid-area: del; }
+    .C { grid-area: C; }
+    .sin { grid-area: sin; }
+    .cos { grid-area: cos; }
+    .tan { grid-area: tan; }
+    .log { grid-area: log; }
+    .ln { grid-area: ln; }
+    .power { grid-area: power; }
+    .seven { grid-area: seven; }
+    .eight { grid-area: eight; }
+    .nine { grid-area: nine; }
+    .percent { grid-area: percent; }
+    .sqrt { grid-area: sqrt; }
+    .four { grid-area: four; }
+    .five { grid-area: five; }
+    .six { grid-area: six; }
+    .mult { grid-area: mult; }
+    .div { grid-area: div; }
+    .one { grid-area: one; }
+    .two { grid-area: two; }
+    .three { grid-area: three; }
+    .plus { grid-area: plus; }
+    .minus { grid-area: minus; }
+    .zero { grid-area: zero; }
+    .dot { grid-area: dot; }
+    .pi { grid-area: pi; }
+    .e { grid-area: e; }
+    .ms { grid-area: ms; }
+    .mr { grid-area: mr; }
+    .mc { grid-area: mc; }
+    .mplus { grid-area: mplus; }
+    .enter { grid-area: enter; background: #4682b4; color: white; }
+    .theme-toggle {
+      padding: 10px;
+      font-size: 20px;
+      background: #4682b4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+    .clear-history {
+      padding: 10px;
+      font-size: 16px;
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Dark Theme */
+    body.dark {
+      background: linear-gradient(45deg, #1a1a1a, #2c3e50, #4a235a, #1a1a1a);
+      background-size: 400%;
+      animation: gradientAnimation 15s ease infinite;
+    }
+    body.dark .heading {
+      color: #e0e0e0;
+    }
+    body.dark .calculator {
+      background: #2c2c2c;
+    }
+    body.dark .display {
+      background: #3c3c3c;
+      color: #e0e0e0;
+    }
+    body.dark .display .expression {
+      color: #bbb;
+    }
+    body.dark .display .result {
+      color: #fff;
+    }
+    body.dark .history {
+      background: #333;
+      color: #ddd;
+    }
+    body.dark button {
+      background: #555;
+      color: #e0e0e0;
+    }
+    body.dark button:hover {
+      opacity: 0.9;
+    }
+    body.dark .enter {
+      background: #5a9bd4;
+    }
+    body.dark .enter:hover {
+      background: #4a8ac4;
+    }
+    body.dark .theme-toggle {
+      background: #5a9bd4;
+    }
+    body.dark .theme-toggle:hover {
+      background: #4a8ac4;
+    }
+    body.dark .clear-history {
+      background: #ff6666;
+    }
+    body.dark .clear-history:hover {
+      background: #ff3333;
+    }
+
+    @media (max-width: 430px) {
+      .calculator-container {
+        flex-direction: column;
+        max-width: 400px; /* Adjusted for smaller screens */
+        align-items: center;
+      }
+      .history-section {
+        width: 100%;
+      }
+      .history {
+        height: 100px;
+      }
+      .buttons {
+        grid-template-areas:
+          "openparen closeparen ans del"
+          "C sin cos tan"
+          "percent sqrt log ln"
+          "power seven eight nine"
+          "four five six mult"
+          "div one two three"
+          "plus minus zero dot"
+          "pi e ms mr"
+          "mc mplus enter";
+      }
+      .calculator {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator-container">
+    <button class="theme-toggle" id="themeToggle">☀️🌙</button>
+    <div class="history-section">
+      <div class="history" id="history">No history yet</div>
+      <button class="clear-history" id="clearHistory">Clear History</button>
+    </div>
+    <div>
+      <div class="heading">🖩CALCULATOR🖩</div>
+      <div class="calculator">
+        <div class="display">
+          <div class="expression">0</div>
+          <div class="result">0</div>
+        </div>
+        <div class="buttons">
+          <button class="openparen">(</button>
+          <button class="closeparen">)</button>
+          <button class="ans">ans</button>
+          <button class="del">del</button>
+          <button class="C">C</button>
+          <button class="sin">sin</button>
+          <button class="cos">cos</button>
+          <button class="tan">tan</button>
+          <button class="percent">%</button>
+          <button class="sqrt">√</button>
+          <button class="log">log</button>
+          <button class="ln">ln</button>
+          <button class="power">^</button>
+          <button class="seven">7</button>
+          <button class="eight">8</button>
+          <button class="nine">9</button>
+          <button class="mult">×</button>
+          <button class="div">÷</button>
+          <button class="four">4</button>
+          <button class="five">5</button>
+          <button class="six">6</button>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+          <button class="one">1</button>
+          <button class="two">2</button>
+          <button class="three">3</button>
+          <button class="pi">π</button>
+          <button class="e">e</button>
+          <button class="ms">MS</button>
+          <button class="mr">MR</button>
+          <button class="zero">0</button>
+          <button class="dot">.</button>
+          <button class="mc">MC</button>
+          <button class="mplus">M+</button>
+          <button class="enter">ENTER</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const display = document.querySelector('.display .result');
+    const expressionDiv = document.querySelector('.display .expression');
+    const buttons = document.querySelectorAll('.buttons button');
+    const historyDiv = document.getElementById('history');
+    const themeToggle = document.getElementById('themeToggle');
+    const clearHistoryBtn = document.getElementById('clearHistory');
+
+    let currentExpression = '';
+    let result = 0;
+    let lastCalculation = false;
+    let history = [];
+    let memory = 0;
+    let decimalPlaces = 2;
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.textContent;
+
+        if (value === 'C') {
+          currentExpression = '';
+          result = 0;
+          lastCalculation = false;
+          display.textContent = '0';
+        } else if (value === 'del') {
+          currentExpression = currentExpression.slice(0, -1) || '0';
+          lastCalculation = false;
+        } else if (value === 'ENTER') {
+          if (!isParenthesesBalanced(currentExpression)) {
+            result = 'Error: Unbalanced parentheses';
+          } else {
+            try {
+              let evalExpression = currentExpression
+                .replace('×', '*')
+                .replace('÷', '/')
+                .replace('^', '**')
+                .replace('sin', 'Math.sin')
+                .replace('cos', 'Math.cos')
+                .replace('tan', 'Math.tan')
+                .replace('log', 'Math.log10')
+                .replace('ln', 'Math.log')
+                .replace('π', 'Math.PI')
+                .replace('e', 'Math.E');
+              result = eval(evalExpression) || 0;
+              result = Number(result.toFixed(decimalPlaces));
+              if (currentExpression) {
+                history.unshift(`${currentExpression} = ${result}`);
+                historyDiv.innerHTML = history.join('<br>');
+              }
+              lastCalculation = true;
+            } catch (e) {
+              result = 'Error';
+            }
+          }
+        } else if (value === 'ans') {
+          currentExpression += result;
+          lastCalculation = false;
+        } else if (value === '√') {
+          currentExpression += 'Math.sqrt(';
+          lastCalculation = false;
+        } else if (value === '%') {
+          currentExpression = (parseFloat(result) * parseFloat(currentExpression) / 100).toString();
+          lastCalculation = false;
+        } else if (value === 'MS') {
+          memory = result;
+          lastCalculation = false;
+        } else if (value === 'MR') {
+          currentExpression += memory;
+          lastCalculation = false;
+        } else if (value === 'MC') {
+          memory = 0;
+          lastCalculation = false;
+        } else if (value === 'M+') {
+          memory += result;
+          lastCalculation = false;
+        } else {
+          if (lastCalculation && /[0-9()×÷+-.^sincos tanloglnπe]/.test(value)) {
+            currentExpression = value;
+            result = 0;
+            display.textContent = '0';
+            lastCalculation = false;
+          } else {
+            currentExpression += value;
+            lastCalculation = false;
+          }
+        }
+
+        expressionDiv.textContent = currentExpression || '0';
+        display.textContent = (result !== 'Error' && value === 'ENTER') ? result : display.textContent;
+        playClickSound();
+      });
+    });
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      themeToggle.textContent = document.body.classList.contains('dark') ? '🌙' : '☀️';
+    });
+
+    clearHistoryBtn.addEventListener('click', () => {
+      history = [];
+      historyDiv.innerHTML = 'No history yet';
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key;
+      if (/[0-9]/.test(key)) buttons.forEach(b => { if (b.textContent === key) b.click(); });
+      else if (key === '+') buttons.forEach(b => { if (b.textContent === '+') b.click(); });
+      else if (key === '-') buttons.forEach(b => { if (b.textContent === '-') b.click(); });
+      else if (key === '*') buttons.forEach(b => { if (b.textContent === '×') b.click(); });
+      else if (key === '/') buttons.forEach(b => { if (b.textContent === '÷') b.click(); });
+      else if (key === '.') buttons.forEach(b => { if (b.textContent === '.') b.click(); });
+      else if (key === '(') buttons.forEach(b => { if (b.textContent === '(') b.click(); });
+      else if (key === ')') buttons.forEach(b => { if (b.textContent === ')') b.click(); });
+      else if (key === 'Enter') buttons.forEach(b => { if (b.textContent === 'ENTER') b.click(); });
+      else if (key === 'Backspace') buttons.forEach(b => { if (b.textContent === 'del') b.click(); });
+    });
+
+    function isParenthesesBalanced(expr) {
+      let count = 0;
+      for (let char of expr) {
+        if (char === '(') count++;
+        else if (char === ')') count--;
+        if (count < 0) return false;
+      }
+      return count === 0;
+    }
+
+    function playClickSound() {
+      const audio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+      audio.play().catch(() => {});
+    }
+  </script>
+</body> 
+</html>
