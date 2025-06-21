@@ -241,34 +241,35 @@
         flex-direction: column;
         max-width: 100%;
         align-items: center;
-        margin-top: 50px;
+        margin-top: 60px;
         padding: 0;
       }
       .history-section {
-        width: 100%;
-        max-width: 350px;
+        width: 90%;
+        max-width: 400px;
       }
       .history {
-        height: 100px;
-        font-size: 12px;
+        height: 120px;
+        font-size: 14px;
       }
       .calculator {
         padding: 15px;
-        max-width: 350px;
+        width: 90%;
+        max-width: 400px;
       }
       .heading {
-        font-size: 20px;
+        font-size: 22px;
       }
       .display {
-        height: 70px;
-        font-size: 20px;
-        padding: 8px;
+        height: 80px;
+        font-size: 22px;
+        padding: 10px;
       }
       .display .expression {
-        font-size: 14px;
+        font-size: 16px;
       }
       .display .result {
-        font-size: 20px;
+        font-size: 22px;
       }
       .buttons {
         grid-template-areas:
@@ -282,56 +283,59 @@
           "pi e ms mr"
           "mc mplus factorial mminus"
           "enter enter enter enter";
-        gap: 4px;
+        gap: 5px;
+      }
+      button {
+        padding: 14px;
+        font-size: 18px;
+        min-height: 50px;
+      }
+      .theme-toggle {
+        top: 10px;
+        right: 10px;
+        padding: 10px;
+        font-size: 20px;
+      }
+      .clear-history {
+        padding: 10px;
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 320px) {
+      .calculator {
+        padding: 12px;
+        width: 95%;
+        max-width: 300px;
+      }
+      .history-section {
+        width: 95%;
+        max-width: 300px;
+      }
+      .heading {
+        font-size: 20px;
+      }
+      .display {
+        height: 70px;
+        font-size: 20px;
+      }
+      .display .expression {
+        font-size: 14px;
+      }
+      .display .result {
+        font-size: 20px;
       }
       button {
         padding: 12px;
         font-size: 16px;
         min-height: 45px;
       }
-      .theme-toggle {
-        top: 5px;
-        right: 5px;
-        padding: 8px;
-        font-size: 18px;
-      }
-      .clear-history {
-        padding: 8px;
-        font-size: 14px;
-      }
-    }
-
-    @media (max-width: 320px) {
-      .calculator {
-        padding: 10px;
-        max-width: 300px;
-      }
-      .history-section {
-        max-width: 300px;
-      }
-      .heading {
-        font-size: 18px;
-      }
-      .display {
-        height: 60px;
-        font-size: 18px;
-      }
-      .display .expression {
-        font-size: 12px;
-      }
-      .display .result {
-        font-size: 18px;
-      }
-      button {
-        padding: 10px;
-        font-size: 14px;
-        min-height: 40px;
-      }
       .history {
-        font-size: 11px;
+        font-size: 12px;
+        height: 100px;
       }
       .clear-history {
-        font-size: 12px;
+        font-size: 14px;
       }
     }
   </style>
