@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Calculator</title>
   <style>
     body {
@@ -16,6 +16,7 @@
       background: linear-gradient(45deg, #f0f0f0, #a3c2ff, #d1a3ff, #f0f0f0);
       background-size: 400%;
       animation: gradientAnimation 15s ease infinite;
+      overflow-x: hidden;
     }
     @keyframes gradientAnimation {
       0% { background-position: 0% 50%; }
@@ -27,15 +28,17 @@
       flex-direction: row;
       gap: 10px;
       width: 100%;
-      max-width: 700px; /* Adjusted to accommodate history and calculator side by side */
-      margin-top: -20px; /* Move calculator upward */
+      max-width: 700px;
+      margin-top: -20px;
       align-items: flex-start;
+      padding: 10px;
+      box-sizing: border-box;
     }
     .history-section {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      width: 200px; /* Fixed width for history section */
+      width: 200px;
     }
     .heading {
       font-size: 24px;
@@ -50,7 +53,8 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 500px; /* Keep calculator width consistent */
+      max-width: 500px;
+      box-sizing: border-box;
     }
     .display {
       width: 100%;
@@ -65,24 +69,27 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      box-sizing: border-box;
     }
     .display .expression {
       font-size: 16px;
       color: #666;
       word-wrap: break-word;
+      overflow-wrap: anywhere;
     }
     .display .result {
       font-size: 24px;
       color: #000;
     }
     .history {
-      height: 200px; /* Increased height for better visibility */
+      height: 200px;
       background: #f0f0f0;
       border-radius: 5px;
       padding: 10px;
       overflow-y: auto;
       font-size: 14px;
       color: #333;
+      box-sizing: border-box;
     }
     .buttons {
       display: grid;
@@ -94,7 +101,7 @@
         "four five six pi e"
         "one two three ms mr"
         "zero zero dot mc mplus"
-        "enter enter enter enter enter";
+        "enter enter factorial mminus mminus";
       gap: 5px;
     }
     button {
@@ -106,6 +113,7 @@
       transition: background-color 0.3s, opacity 0.3s;
       background: #d3d3d3;
       color: #333;
+      touch-action: manipulation;
     }
     button:hover {
       opacity: 0.9;
@@ -144,6 +152,8 @@
     .mr { grid-area: mr; }
     .mc { grid-area: mc; }
     .mplus { grid-area: mplus; }
+    .factorial { grid-area: factorial; }
+    .mminus { grid-area: mminus; }
     .enter { grid-area: enter; background: #4682b4; color: white; }
     .theme-toggle {
       padding: 10px;
@@ -153,9 +163,10 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      position: absolute;
-      top: 20px;
-      right: 20px;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
     }
     .clear-history {
       padding: 10px;
@@ -219,17 +230,45 @@
       background: #ff3333;
     }
 
+    /* Mobile Responsiveness */
     @media (max-width: 430px) {
+      body {
+        align-items: flex-start;
+        padding: 10px;
+        min-height: auto;
+      }
       .calculator-container {
         flex-direction: column;
-        max-width: 400px; /* Adjusted for smaller screens */
+        max-width: 100%;
         align-items: center;
+        margin-top: 50px;
+        padding: 0;
       }
       .history-section {
         width: 100%;
+        max-width: 350px;
       }
       .history {
         height: 100px;
+        font-size: 12px;
+      }
+      .calculator {
+        padding: 15px;
+        max-width: 350px;
+      }
+      .heading {
+        font-size: 20px;
+      }
+      .display {
+        height: 70px;
+        font-size: 20px;
+        padding: 8px;
+      }
+      .display .expression {
+        font-size: 14px;
+      }
+      .display .result {
+        font-size: 20px;
       }
       .buttons {
         grid-template-areas:
@@ -241,10 +280,58 @@
           "div one two three"
           "plus minus zero dot"
           "pi e ms mr"
-          "mc mplus enter";
+          "mc mplus factorial mminus"
+          "enter enter enter enter";
+        gap: 4px;
       }
+      button {
+        padding: 12px;
+        font-size: 16px;
+        min-height: 45px;
+      }
+      .theme-toggle {
+        top: 5px;
+        right: 5px;
+        padding: 8px;
+        font-size: 18px;
+      }
+      .clear-history {
+        padding: 8px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 320px) {
       .calculator {
         padding: 10px;
+        max-width: 300px;
+      }
+      .history-section {
+        max-width: 300px;
+      }
+      .heading {
+        font-size: 18px;
+      }
+      .display {
+        height: 60px;
+        font-size: 18px;
+      }
+      .display .expression {
+        font-size: 12px;
+      }
+      .display .result {
+        font-size: 18px;
+      }
+      button {
+        padding: 10px;
+        font-size: 14px;
+        min-height: 40px;
+      }
+      .history {
+        font-size: 11px;
+      }
+      .clear-history {
+        font-size: 12px;
       }
     }
   </style>
@@ -298,6 +385,8 @@
           <button class="dot">.</button>
           <button class="mc">MC</button>
           <button class="mplus">M+</button>
+          <button class="factorial">!</button>
+          <button class="mminus">M-</button>
           <button class="enter">ENTER</button>
         </div>
       </div>
@@ -319,6 +408,14 @@
     let memory = 0;
     let decimalPlaces = 2;
 
+    function factorial(n) {
+      if (!Number.isInteger(n) || n < 0) return 'Error: Non-negative integer required';
+      if (n === 0 || n === 1) return 1;
+      let result = 1;
+      for (let i = 2; i <= n; i++) result *= i;
+      return result;
+    }
+
     buttons.forEach(button => {
       button.addEventListener('click', () => {
         const value = button.textContent;
@@ -328,15 +425,29 @@
           result = 0;
           lastCalculation = false;
           display.textContent = '0';
+          expressionDiv.textContent = '0';
         } else if (value === 'del') {
           currentExpression = currentExpression.slice(0, -1) || '0';
           lastCalculation = false;
         } else if (value === 'ENTER') {
           if (!isParenthesesBalanced(currentExpression)) {
             result = 'Error: Unbalanced parentheses';
+            display.textContent = result;
           } else {
             try {
-              let evalExpression = currentExpression
+              let evalExpression = currentExpression;
+              let isFactorial = false;
+              let inputNum;
+
+              // Check if expression ends with '!'
+              if (evalExpression.endsWith('!')) {
+                isFactorial = true;
+                evalExpression = evalExpression.slice(0, -1); // Remove '!'
+                inputNum = parseFloat(evalExpression);
+              }
+
+              // Evaluate the expression (without factorial)
+              evalExpression = evalExpression
                 .replace('×', '*')
                 .replace('÷', '/')
                 .replace('^', '**')
@@ -347,40 +458,56 @@
                 .replace('ln', 'Math.log')
                 .replace('π', 'Math.PI')
                 .replace('e', 'Math.E');
+
               result = eval(evalExpression) || 0;
               result = Number(result.toFixed(decimalPlaces));
-              if (currentExpression) {
+
+              // If factorial, compute it
+              if (isFactorial) {
+                if (!isNaN(inputNum) && Number.isInteger(inputNum) && inputNum >= 0) {
+                  result = factorial(inputNum);
+                  if (currentExpression) {
+                    history.unshift(`${inputNum}! = ${result}`);
+                    historyDiv.innerHTML = history.join('<br>');
+                  }
+                } else {
+                  result = 'Error: Non-negative integer required for factorial';
+                }
+              } else if (currentExpression) {
                 history.unshift(`${currentExpression} = ${result}`);
                 historyDiv.innerHTML = history.join('<br>');
               }
+
               lastCalculation = true;
+              display.textContent = result;
             } catch (e) {
               result = 'Error';
+              display.textContent = result;
             }
           }
         } else if (value === 'ans') {
           currentExpression += result;
           lastCalculation = false;
-        } else if (value === '√') {
-          currentExpression += 'Math.sqrt(';
-          lastCalculation = false;
-        } else if (value === '%') {
-          currentExpression = (parseFloat(result) * parseFloat(currentExpression) / 100).toString();
-          lastCalculation = false;
+          expressionDiv.textContent = currentExpression;
         } else if (value === 'MS') {
           memory = result;
           lastCalculation = false;
         } else if (value === 'MR') {
           currentExpression += memory;
           lastCalculation = false;
+          expressionDiv.textContent = currentExpression;
         } else if (value === 'MC') {
           memory = 0;
           lastCalculation = false;
         } else if (value === 'M+') {
           memory += result;
           lastCalculation = false;
+        } else if (value === 'M-') {
+          memory -= result;
+          lastCalculation = false;
         } else {
-          if (lastCalculation && /[0-9()×÷+-.^sincos tanloglnπe]/.test(value)) {
+          // If starting a new operation, clear previous expression and result
+          if (lastCalculation && /[0-9()×÷+-.^sincostanloglnπe!]/.test(value)) {
             currentExpression = value;
             result = 0;
             display.textContent = '0';
@@ -389,10 +516,9 @@
             currentExpression += value;
             lastCalculation = false;
           }
+          expressionDiv.textContent = currentExpression;
         }
 
-        expressionDiv.textContent = currentExpression || '0';
-        display.textContent = (result !== 'Error' && value === 'ENTER') ? result : display.textContent;
         playClickSound();
       });
     });
@@ -409,16 +535,29 @@
 
     document.addEventListener('keydown', (event) => {
       const key = event.key;
-      if (/[0-9]/.test(key)) buttons.forEach(b => { if (b.textContent === key) b.click(); });
-      else if (key === '+') buttons.forEach(b => { if (b.textContent === '+') b.click(); });
-      else if (key === '-') buttons.forEach(b => { if (b.textContent === '-') b.click(); });
-      else if (key === '*') buttons.forEach(b => { if (b.textContent === '×') b.click(); });
-      else if (key === '/') buttons.forEach(b => { if (b.textContent === '÷') b.click(); });
-      else if (key === '.') buttons.forEach(b => { if (b.textContent === '.') b.click(); });
-      else if (key === '(') buttons.forEach(b => { if (b.textContent === '(') b.click(); });
-      else if (key === ')') buttons.forEach(b => { if (b.textContent === ')') b.click(); });
-      else if (key === 'Enter') buttons.forEach(b => { if (b.textContent === 'ENTER') b.click(); });
-      else if (key === 'Backspace') buttons.forEach(b => { if (b.textContent === 'del') b.click(); });
+      if (/[0-9]/.test(key)) {
+        buttons.forEach(b => { if (b.textContent === key) b.click(); });
+      } else if (key === '+') {
+        buttons.forEach(b => { if (b.textContent === '+') b.click(); });
+      } else if (key === '-') {
+        buttons.forEach(b => { if (b.textContent === '-') b.click(); });
+      } else if (key === '*') {
+        buttons.forEach(b => { if (b.textContent === '×') b.click(); });
+      } else if (key === '/') {
+        buttons.forEach(b => { if (b.textContent === '÷') b.click(); });
+      } else if (key === '.') {
+        buttons.forEach(b => { if (b.textContent === '.') b.click(); });
+      } else if (key === '(') {
+        buttons.forEach(b => { if (b.textContent === '(') b.click(); });
+      } else if (key === ')') {
+        buttons.forEach(b => { if (b.textContent === ')') b.click(); });
+      } else if (key === 'Enter') {
+        buttons.forEach(b => { if (b.textContent === 'ENTER') b.click(); });
+      } else if (key === 'Backspace') {
+        buttons.forEach(b => { if (b.textContent === 'del') b.click(); });
+      } else if (key === '!') {
+        buttons.forEach(b => { if (b.textContent === '!') b.click(); });
+      }
     });
 
     function isParenthesesBalanced(expr) {
